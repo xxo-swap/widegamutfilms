@@ -1,26 +1,44 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@theme {
+  /* Color Variables */
+  --color-bg-white: #ffffff;
+  --color-foreground: #000000;
+
+  /* Font Variables */
+  --font-heading: var(--font-anton), sans-serif;
+  --font-subHeading: var(--font-urbanist), sans-serif;
+  --font-body: var(--font-forum), serif;
+  --font-mono: var(--font-jetbrains-mono), monospace;
+
+  /* Shadows */
+  --shadow-brutal-sm: 2px 2px 0px 0px var(--color-foreground);
+  --shadow-brutal: 4px 4px 0px 0px var(--color-foreground);
+  --shadow-brutal-lg: 6px 6px 0px 0px var(--color-foreground);
+
+  /* Prismatic Rainbow Gradient */
+  --background-image-prism: linear-gradient(
+    135deg,
+    #00f5d4 0%,
+    #70e000 25%,
+    #ffbe0b 50%,
+    #ff5400 75%,
+    #9b5de5 100%
+  );
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer utilities {
+  .bg-prism {
+    background-image: var(--background-image-prism);
+  }
+  .text-prism {
+    background: var(--background-image-prism);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
   }
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--color-bg-white);
+  color: var(--color-foreground);
 }
