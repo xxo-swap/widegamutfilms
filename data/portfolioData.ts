@@ -53,8 +53,19 @@ export interface PortfolioData {
 
 export const PortfolioData : PortfolioData = {
     reels : [
+        
         {
             id: "wed-01",
+            type: "Wedding",
+            title : "Haldi Reel",
+            year : "2026",
+            ytUrl : "https://youtu.be/P-ljcBXgbPE",
+            igUrl : "https://www.instagram.com/p/example3/",
+            thumbnailUrl : "https://img.youtube.com/vi/P-ljcBXgbPE/maxresdefault.jpg"
+        }
+        ,
+        {
+            id: "wed-02",
             type: "Wedding",
             title : "Wedding Reel",
             year : "2026",
@@ -63,7 +74,7 @@ export const PortfolioData : PortfolioData = {
             thumbnailUrl : "https://img.youtube.com/vi/2DeaUdMBtKU/maxresdefault.jpg"
         },
         {
-            id: "wed-02",
+            id: "wed-03",
             type: "Wedding",
             title : "Haldi Reel",
             year : "2026",
@@ -117,6 +128,14 @@ export const PortfolioData : PortfolioData = {
         
     ],
     films : [
-       
+       {
+        id: "film-01",
+        type: "Wedding",
+        title : "Wedding Film",
+        year : "2026",
+        ytUrl : "https://youtu.be/ExSfoarzdcI",
+        igUrl : "https://www.instagram.com/p/example3/",
+        thumbnailUrl : "https://img.youtube.com/vi/ExSfoarzdcI/maxresdefault.jpg"
+       }
     ]   
 }

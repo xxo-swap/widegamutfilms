@@ -2,129 +2,23 @@
 
 import React, { useState, useMemo } from "react";
 import Image from "next/image";
+// Adjust the path to wherever your data file lives:
+import { PortfolioData, Reel, Teaser, TraditionalFilm, Film } from "@/data/portfolioData";
 
-/* =========================================================================
-   Types & Interfaces (as provided)
-   ========================================================================= */
-export interface Reel {
-  id: string;
-  type: "Travel" | "Wedding" | "Short Film";
-  title: string;
-  year: string;
-  ytUrl: string;
-  igUrl: string;
-  thumbnailUrl: string;
-}
-
-export interface Teaser {
-  id: string;
-  type: "Short Film" | "Wedding" | "Pre-Wedding";
-  title: string;
-  year: string;
-  ytUrl: string;
-  igUrl: string;
-  thumbnailUrl: string;
-}
-
-export interface TraditionalFilm {
-  id: string;
-  type: "Wedding" | "Mehendi" | "Haldi " | "Reception";
-  title: string;
-  year: string;
-  ytUrl: string;
-  igUrl: string;
-  thumbnailUrl: string;
-}
-
-export interface Film {
-  id: string;
-  type: "Wedding";
-  title: string;
-  year: string;
-  ytUrl: string;
-  igUrl: string;
-  thumbnailUrl: string;
-}
-
-export interface PortfolioData {
-  reels: Reel[];
-  teasers: Teaser[];
-  traditionalFilms: TraditionalFilm[];
-  films: Film[];
-}
-
-/* =========================================================================
-   Data
-   ========================================================================= */
-export const portfolioData: PortfolioData = {
-  reels: [
-    {
-      id: "wed-01",
-      type: "Wedding",
-      title: "Wedding Reel",
-      year: "2026",
-      ytUrl: "https://youtu.be/2DeaUdMBtKU",
-      igUrl: "https://www.instagram.com/p/example1/",
-      thumbnailUrl: "https://img.youtube.com/vi/2DeaUdMBtKU/maxresdefault.jpg",
-    },
-    {
-      id: "wed-02",
-      type: "Wedding",
-      title: "Haldi Reel",
-      year: "2026",
-      ytUrl: "https://www.youtube.com/shorts/6Qd3QfSXfEE",
-      igUrl: "https://www.instagram.com/p/example2/",
-      thumbnailUrl: "https://img.youtube.com/vi/6Qd3QfSXfEE/maxresdefault.jpg",
-    },
-    {
-      id: "tra-01",
-      type: "Travel",
-      title: "Travel Reel",
-      year: "2026",
-      ytUrl: "https://www.youtube.com/shorts/aU7gdNo_KUo",
-      igUrl: "https://www.instagram.com/p/example3/",
-      thumbnailUrl: "https://img.youtube.com/vi/aU7gdNo_KUo/maxresdefault.jpg",
-    },
-    {
-      id: "tra-02",
-      type: "Travel",
-      title: "Travel Reel",
-      year: "2026",
-      ytUrl: "https://www.youtube.com/shorts/K8HMEuZgAtM",
-      igUrl: "https://www.instagram.com/p/example4/",
-      thumbnailUrl: "https://img.youtube.com/vi/K8HMEuZgAtM/maxresdefault.jpg",
-    },
-  ],
-
-  teasers: [
-    {
-      id: "teaser-01",
-      type: "Pre-Wedding",
-      title: "Mathura Pre-Wedding Teaser",
-      year: "2026",
-      ytUrl: "https://youtu.be/1E6YLh_t5Tk",
-      igUrl: "https://www.instagram.com/p/example3/",
-      thumbnailUrl: "https://img.youtube.com/vi/1E6YLh_t5Tk/maxresdefault.jpg",
-    },
-    {
-      id: "teaser-02",
-      type: "Pre-Wedding",
-      title: "Vrindavan Pre-Wedding Teaser",
-      year: "2026",
-      ytUrl: "https://youtu.be/N7YTy1Gw66k",
-      igUrl: "https://www.instagram.com/p/example3/",
-      thumbnailUrl: "https://img.youtube.com/vi/N7YTy1Gw66k/maxresdefault.jpg",
-    },
-  ],
-
-  traditionalFilms: [],
-  films: [],
-};
+type BasePortfolioItem = Reel | Teaser | TraditionalFilm | Film;
 
 type PortfolioCategory = "ALL" | "REELS" | "TEASERS" | "FILMS";
 
-type PortfolioItem = (Reel | Teaser | TraditionalFilm | Film) & {
-  categoryLabel: "Reel" | "Teaser" | "Traditional Film" | "Film";
+type PortfolioItem = BasePortfolioItem & {
+  categoryKey: keyof typeof PortfolioData;
+  categoryLabel: string;
+};
+
+const CATEGORY_MAP: Record<keyof typeof PortfolioData, { label: string; tab: PortfolioCategory }> = {
+  reels: { label: "Reel", tab: "REELS" },
+  teasers: { label: "Teaser", tab: "TEASERS" },
+  traditionalFilms: { label: "Traditional Film", tab: "FILMS" },
+  films: { label: "Film", tab: "FILMS" },
 };
 
 /* Helper to convert YouTube URL to embed format */
@@ -145,54 +39,42 @@ const getEmbedUrl = (url: string) => {
   return url;
 };
 
-/* =========================================================================
-   Component
-   ========================================================================= */
 export default function AboutMe() {
   const [activeTab, setActiveTab] = useState<PortfolioCategory>("ALL");
   const [activeVideo, setActiveVideo] = useState<PortfolioItem | null>(null);
 
-  // Flattened portfolio items
+  // Dynamically flatten every array directly out of the PortfolioData object
   const allItems: PortfolioItem[] = useMemo(() => {
-    return [
-      ...portfolioData.reels.map((item) => ({ ...item, categoryLabel: "Reel" as const })),
-      ...portfolioData.teasers.map((item) => ({ ...item, categoryLabel: "Teaser" as const })),
-      ...portfolioData.traditionalFilms.map((item) => ({
+    return Object.entries(PortfolioData).flatMap(([key, items]) => {
+      const config = CATEGORY_MAP[key as keyof typeof PortfolioData];
+      return (items as BasePortfolioItem[]).map((item) => ({
         ...item,
-        categoryLabel: "Traditional Film" as const,
-      })),
-      ...portfolioData.films.map((item) => ({ ...item, categoryLabel: "Film" as const })),
-    ];
+        categoryKey: key as keyof typeof PortfolioData,
+        categoryLabel: config?.label ?? key,
+      }));
+    });
   }, []);
 
+  // Filter based on active tab
   const filteredItems = useMemo(() => {
     if (activeTab === "ALL") return allItems;
-    if (activeTab === "REELS") return allItems.filter((i) => i.categoryLabel === "Reel");
-    if (activeTab === "TEASERS") return allItems.filter((i) => i.categoryLabel === "Teaser");
-    if (activeTab === "FILMS") {
-      return allItems.filter(
-        (i) => i.categoryLabel === "Film" || i.categoryLabel === "Traditional Film"
-      );
-    }
-    return allItems;
+    return allItems.filter((item) => {
+      const targetTab = CATEGORY_MAP[item.categoryKey]?.tab;
+      return targetTab === activeTab;
+    });
   }, [allItems, activeTab]);
 
   return (
     <main className="min-h-screen bg-[var(--color-bg-white)] text-[var(--color-foreground)] antialiased selection:bg-black selection:text-white">
-      {/* ===================================================================
-          1. INTRO / ABOUT SECTION
-          =================================================================== */}
+      {/* 1. INTRO / ABOUT SECTION */}
       <section className="border-b-4 border-black px-6 py-16 md:py-24 lg:px-16">
         <div className="mx-auto max-w-6xl">
-          {/* Top Label */}
           <div className="mb-6 inline-flex items-center gap-2 border-2 border-black bg-white px-3 py-1 font-[family-name:var(--font-mono)] text-xs uppercase tracking-widest shadow-[var(--shadow-brutal-sm)]">
             <span className="h-2 w-2 rounded-full bg-emerald-500 animate-ping" />
             <span>Aspiring Cinematographer &amp; Visual Storyteller</span>
           </div>
 
-          {/* Main Hero Grid */}
           <div className="grid gap-12 lg:grid-cols-12 lg:items-center">
-            {/* Left Headline & Bio */}
             <div className="space-y-6 lg:col-span-7">
               <h1 className="font-[family-name:var(--font-heading)] text-5xl uppercase tracking-tight sm:text-7xl lg:text-8xl leading-none">
                 Swapnil <br />
@@ -203,7 +85,6 @@ export default function AboutMe() {
                 &quot;New to the industry, but aspiring to create some of India&apos;s finest wedding films. Currently looking for opportunities to collaborate and create.&quot;
               </p>
 
-              {/* Badges / Accents */}
               <div className="flex flex-wrap gap-2 pt-2 font-[family-name:var(--font-mono)] text-xs">
                 <span className="border-2 border-black bg-black px-3 py-1.5 font-bold text-white shadow-[var(--shadow-brutal-sm)]">
                   Cinematic Weddings
@@ -217,7 +98,6 @@ export default function AboutMe() {
               </div>
             </div>
 
-{/* Right Stat Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 lg:col-span-5">
               <div className="border-2 border-black bg-white p-6 shadow-[var(--shadow-brutal)]">
                 <span className="font-[family-name:var(--font-mono)] text-xs text-neutral-500 uppercase tracking-wider block">
@@ -254,27 +134,23 @@ export default function AboutMe() {
                 </div>
               </div>
             </div>
-
           </div>
         </div>
       </section>
 
-      {/* ===================================================================
-          2. PORTFOLIO SECTION
-          =================================================================== */}
+      {/* 2. PORTFOLIO SECTION */}
       <section className="px-6 py-16 md:py-24 lg:px-16">
         <div className="mx-auto max-w-6xl">
-          {/* Header & Filter Controls */}
           <div className="mb-12 flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
             <div>
               <div className="font-[family-name:var(--font-mono)] text-xs uppercase tracking-widest text-neutral-500 mb-2">
-Portfolio              </div>
+                Portfolio
+              </div>
               <h2 className="font-[family-name:var(--font-heading)] text-4xl uppercase tracking-tight sm:text-6xl">
                 Early Works &amp; Experiments
               </h2>
             </div>
 
-            {/* Filter Buttons */}
             <div className="flex flex-wrap gap-2 font-[family-name:var(--font-mono)] text-xs uppercase">
               {(["ALL", "REELS", "TEASERS", "FILMS"] as PortfolioCategory[]).map((cat) => {
                 const isActive = activeTab === cat;
@@ -295,7 +171,6 @@ Portfolio              </div>
             </div>
           </div>
 
-          {/* Video Cards Grid */}
           {filteredItems.length === 0 ? (
             <div className="border-2 border-dashed border-black p-12 text-center font-[family-name:var(--font-mono)] text-neutral-500">
               No projects found under this category yet.
@@ -307,7 +182,6 @@ Portfolio              </div>
                   key={item.id}
                   className="group flex flex-col border-2 border-black bg-white shadow-[var(--shadow-brutal)] transition-all hover:-translate-y-1 hover:shadow-[var(--shadow-brutal-lg)]"
                 >
-                  {/* Thumbnail / Play trigger */}
                   <div
                     onClick={() => setActiveVideo(item)}
                     className="relative aspect-video w-full cursor-pointer overflow-hidden border-b-2 border-black bg-black"
@@ -320,7 +194,6 @@ Portfolio              </div>
                       className="object-cover transition-transform duration-500 group-hover:scale-105 opacity-90 group-hover:opacity-100"
                     />
 
-                    {/* Badge */}
                     <div className="absolute top-3 left-3 flex gap-1 font-[family-name:var(--font-mono)] text-[10px] font-bold">
                       <span className="border border-black bg-white px-2 py-0.5 shadow-[1px_1px_0px_#000]">
                         {item.type}
@@ -330,7 +203,6 @@ Portfolio              </div>
                       </span>
                     </div>
 
-                    {/* Play Button Overlay */}
                     <div className="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity">
                       <div className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-black bg-white shadow-[var(--shadow-brutal-sm)]">
                         <svg className="h-5 w-5 fill-black translate-x-0.5" viewBox="0 0 24 24">
@@ -340,7 +212,6 @@ Portfolio              </div>
                     </div>
                   </div>
 
-                  {/* Card Body */}
                   <div className="flex flex-1 flex-col justify-between p-5">
                     <div>
                       <span className="font-[family-name:var(--font-mono)] text-[10px] uppercase tracking-wider text-neutral-500">
@@ -350,8 +221,6 @@ Portfolio              </div>
                         {item.title}
                       </h3>
                     </div>
-
-                    
                   </div>
                 </article>
               ))}
@@ -360,9 +229,7 @@ Portfolio              </div>
         </div>
       </section>
 
-      {/* ===================================================================
-          MODAL VIDEO PLAYER
-          =================================================================== */}
+      {/* 3. MODAL VIDEO PLAYER */}
       {activeVideo && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm"
@@ -372,7 +239,6 @@ Portfolio              </div>
             className="relative w-full max-w-4xl border-4 border-black bg-white shadow-[8px_8px_0px_#000]"
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Modal Header */}
             <div className="flex items-center justify-between border-b-2 border-black bg-neutral-100 px-4 py-3">
               <div>
                 <span className="font-[family-name:var(--font-mono)] text-[11px] uppercase text-neutral-500 mr-2">
@@ -391,7 +257,6 @@ Portfolio              </div>
               </button>
             </div>
 
-            {/* Video Player */}
             <div className="relative aspect-video w-full bg-black">
               <iframe
                 src={getEmbedUrl(activeVideo.ytUrl)}
