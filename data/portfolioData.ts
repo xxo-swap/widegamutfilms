@@ -1,6 +1,6 @@
 export interface Reel {
     id:string;
-    type: "Travel" | "Wedding" | "Short Film";
+    type: "Travel" | "Wedding" | "Short Film" | "Experiments";
     title : string;
     year : string;
     ytUrl : string;
@@ -38,12 +38,23 @@ export interface Film {
     thumbnailUrl : string;
 }
 
+export interface Experiments {
+    id : string,
+    type: string,
+    title : string,
+    year : string,
+    ytUrl : string,
+    igUrl : string,
+    thumbnailUrl : string
+}
+
 
 export interface PortfolioData {
     reels : Reel[];
     teasers : Teaser[];
     traditionalFilms : TraditionalFilm[];
     films : Film[];
+    Experiments : Experiments[];
 }
 
 
@@ -119,4 +130,16 @@ export const PortfolioData : PortfolioData = {
     films : [
        
     ]   
+    ,
+    Experiments : [
+        {
+            id: "exp-01",
+            type: "Experiments",
+            title : "Falling",
+            year : "2026",
+            ytUrl : "https://youtu.be/w07MHSMd2kc",
+            igUrl : "https://www.instagram.com/p/example3/",
+            thumbnailUrl : "https://img.youtube.com/vi/w07MHSMd2kc/maxresdefault.jpg"
+        }
+    ]
 }

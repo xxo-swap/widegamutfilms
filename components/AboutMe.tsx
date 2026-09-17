@@ -19,6 +19,7 @@ const CATEGORY_MAP: Record<keyof typeof PortfolioData, { label: string; tab: Por
   teasers: { label: "Teaser", tab: "TEASERS" },
   traditionalFilms: { label: "Traditional Film", tab: "FILMS" },
   films: { label: "Film", tab: "FILMS" },
+  Experiments: { label: "Experiments", tab: "FILMS" },
 };
 
 /* Helper to convert YouTube URL to embed format */
