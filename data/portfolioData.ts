@@ -64,6 +64,19 @@ export interface PortfolioData {
 
 export const PortfolioData : PortfolioData = {
     reels : [
+
+        {
+            id: "wed-01",
+            type: "Wedding",
+            title : "Haldi Reel",
+            year : "2026",
+            ytUrl : "https://youtu.be/P-ljcBXgbPE",
+            igUrl : "https://www.instagram.com/p/example1/",
+            thumbnailUrl : "https://img.youtube.com/vi/P-ljcBXgbPE/maxresdefault.jpg"
+
+        },
+
+
         {
             id: "wed-02",
             type: "Wedding",
